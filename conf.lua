@@ -1,5 +1,5 @@
 function love.conf(t)
-    t.window.title = "Guys Vs Gods : Prototype Build"
+    t.window.title = "Love2D Template"
 
     t.window.width = 1280
     t.window.height = 720
