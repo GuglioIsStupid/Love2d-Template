@@ -1,7 +1,9 @@
 local Player = Class:extend()
 
-function Player:new()
-    self.x, self.y = 700, 250
+---@param x number
+---@param y number
+function Player:new(x --[[700]], y --[[250]])
+    self.x, self.y = x or 700, y or 250
 end
 
 function Player:update(dt)
@@ -10,13 +12,12 @@ function Player:update(dt)
 end
 
 function Player:draw()
-    love.graphics.translate(Inits.WindowWidth/2, Inits.WindowHeight/2)
-    love.graphics.translate(-Inits.WindowWidth/2, -Inits.WindowHeight/2)
     love.graphics.rectangle("fill", self.x, self.y, 25, 25)
 end
 
 function Player:release()
-
+    -- Clean up garbage here, after calling Player:release(), you should be able to simply nil the value
+    -- Alternatively, you can just nil it, as lua will eventually clean up the garbage automatically
 end
 
 return Player

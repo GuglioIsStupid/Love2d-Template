@@ -1,12 +1,17 @@
-Inits = require("inits")
+Project = require("Project")
 
-function toGameScreen(x, y)
-    -- converts a position to the game screen
+-- converts a position to the game screen
+---@param x number
+---@param y number
+---@return number, number
+function ToGameScreen(x, y)
     local ratio = 1
-    ratio = math.min(Inits.WindowWidth/Inits.GameWidth, Inits.WindowHeight/Inits.GameHeight)
-    local x, y = x - Inits.WindowWidth/2, y - Inits.WindowHeight/2
+    ratio = math.min(Project.WindowWidth/Project.GameWidth, Project.WindowHeight/Project.GameHeight)
+
+    x, y = (x or 0) - Project.WindowWidth/2, (y or 0) - Project.WindowHeight/2
+
     x, y = x / ratio, y / ratio
-    x, y = x + Inits.GameWidth/2, y + Inits.GameHeight/2
+    x, y = x + Project.GameWidth/2, y + Project.GameHeight/2
 
     return x, y
 end
@@ -25,7 +30,7 @@ function love.load()
     Class = require("Libraries.Class")
     State = require("Libraries.State")
 
-    GameScreen = love.graphics.newCanvas(Inits.GameWidth, Inits.GameHeight)
+    Project.GameScreen = love.graphics.newCanvas(Project.GameWidth, Project.GameHeight)
 
     -- Initialize Game
     States = require("Modules.States")
@@ -43,7 +48,7 @@ end
 
 function love.draw()
     love.graphics.push()
-        love.graphics.setCanvas(GameScreen)
+        love.graphics.setCanvas(Project.GameScreen)
             love.graphics.clear(0,0,0,1)
             State.draw()
         love.graphics.setCanvas()
@@ -51,19 +56,19 @@ function love.draw()
 
     -- ratio
     local ratio = 1
-    ratio = math.min(Inits.WindowWidth/Inits.GameWidth, Inits.WindowHeight/Inits.GameHeight)
+    ratio = math.min(Project.WindowWidth/Project.GameWidth, Project.WindowHeight/Project.GameHeight)
     love.graphics.setColor(1,1,1,1)
     -- draw game screen with the calculated ratio and center it on the screen
     love.graphics.setShader(Shaders.CurrentShader)
-    love.graphics.draw(GameScreen, Inits.WindowWidth/2, Inits.WindowHeight/2, 0, ratio, ratio, Inits.GameWidth/2, Inits.GameHeight/2)
+    love.graphics.draw(Project.GameScreen, Project.WindowWidth/2, Project.WindowHeight/2, 0, ratio, ratio, Project.GameWidth/2, Project.GameHeight/2)
     love.graphics.setShader()
 
     debug.printInfo()
 end
 
 function love.resize(w, h)
-    Inits.WindowWidth = w
-    Inits.WindowHeight = h
+    Project.WindowWidth = w
+    Project.WindowHeight = h
 end
 
 function love.quit()
