@@ -26,6 +26,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
 
 ]]
 
+---@alias State table
+
 ---@class state
 local state = {}
 state.__index = state
@@ -46,11 +48,10 @@ local function switch(newstate, ...)
     return current
 end
 
----@name state.switch
----@description Switches to a new state, returns the new state
----@param newstate table
+---Switches to a new state, returns the new state
+---@param newstate State
 ---@param ... any
----@return table
+---@return State
 function state.switch(newstate, ...)
     assert(newstate, "Called state.switch with no state")
     assert(type(newstate) == "table", "Called state.switch with invalid state")
@@ -58,18 +59,16 @@ function state.switch(newstate, ...)
     return current
 end
 
----@name state.current
----@description Returns the current state
----@return table
+---Returns the current state
+---@return State
 function state.current() return current end
 
 ---@name state.last
----@description Returns the last state
----@return table
+---Returns the last state
+---@return State
 function state.last() return last end
 
----@name state.killSubstate
----@description Kills the current substate and calls current:substateReturn, returns nothing
+---Kills the current substate and calls current:substateReturn, returns nothing
 ---@param ... any
 function state.killSubstate(...)
     if substate and substate.exit then substate:exit() end
@@ -79,26 +78,23 @@ function state.killSubstate(...)
     return
 end 
 
----@name state.currentSubstate
----@description Returns the current substate
----@return table
+---Returns the current substate
+---@return State
 function state.currentSubstate() return substate end
 
 
----@name state.returnToLast
----@description Returns to the last state, returns the new state
----@return table
+---Returns to the last state, returns the new state
+---@return State
 function state.returnToLast()
     assert(last, "Called state.return with no last state")
     switch(last)
     return current
 end
 
----@name state.substate
----@description Switches to a new substate, returns the new substate
----@param newstate table
+---Switches to a new substate, returns the new substate
+---@param newstate State
 ---@param ... any
----@return table
+---@return State
 function state.substate(newstate, ...)
     assert(newstate, "Called state.substate with no state")
     assert(type(newstate) == "table", "Called state.substate with invalid state") 
@@ -114,6 +110,7 @@ end
 
 ---@diagnostic disable-next-line: deprecated
 local unpack = table.unpack or unpack
+
 setmetatable(state, { -- Allows you to call state functions as if they were global
     __index = function(_, func)
         --return function(...) return (current[func] or nop)(...) end

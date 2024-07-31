@@ -1,3 +1,4 @@
+---@class Player
 local Player = Class:extend()
 
 ---@param x number
