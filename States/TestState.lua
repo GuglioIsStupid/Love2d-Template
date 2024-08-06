@@ -1,5 +1,7 @@
 local TestState = State()
 
+local Player
+
 function TestState:enter()
     Player = Objects.Game.Player()
 end
