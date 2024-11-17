@@ -3,7 +3,7 @@ local Player = Class:extend()
 
 ---@param x number
 ---@param y number
-function Player:new(x --[[700]], y --[[250]])
+function Player:new(x --[[x: 700]], y --[[y: 250]])
     self.x, self.y = x or 700, y or 250
 end
 
