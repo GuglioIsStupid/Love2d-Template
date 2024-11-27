@@ -1,5 +1,1 @@
-return {
-    Game = {
-        Player = require("Objects.Game.Player")
-    }
-}
+Player = require("Objects.Game.Player")

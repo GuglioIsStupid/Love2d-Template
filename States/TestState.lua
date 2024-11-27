@@ -1,17 +1,17 @@
 local TestState = State()
 
-local Player
+local player
 
 function TestState:enter()
-    Player = Objects.Game.Player()
+    player = Player()
 end
 
 function TestState:update(dt)
-    Player:update(dt)
+    player:update(dt)
 end
 
 function TestState:draw()
-    Player:draw()
+    player:draw()
 end
 
 return TestState
