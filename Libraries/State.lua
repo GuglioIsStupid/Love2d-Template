@@ -1,6 +1,6 @@
 -- Short and sweet state library for LÖVE. States and substates supported! (Substate draws above the state)
 -- GuglioIsStupid - 2023
--- Version: 1.0.1
+-- Version: 1.1.0
 --[[
 
 The MIT License (MIT)
@@ -27,24 +27,42 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
 ]]
 
 ---@alias State table
-
 ---@class state
 local state = {}
 state.__index = state
+state.__storage = {}
+
 ---@type any
 local current = nil -- Current state
+
 ---@type any
 local last = nil -- Last state
+
 ---@type any
 local substate = nil -- Current substate
 
-state.inSubstate = false
+---@type boolean
+state.inSubstate = false -- If we are in a substate
 
+---@param newstate State
+---@param ... any
+---@return State
 local function switch(newstate, ...)
     if current and current.exit then current:exit() end 
     last = current
     current = newstate
     if current.enter then current:enter(last, ...) end
+    return current
+end
+
+---@param newState State
+---@param ... any
+---@return State
+local function pop(newState, ...)
+    if current and current.exit then current:exit() end
+    last = current
+    current = newState
+    if current.reload then current:reload(last, ...) end
     return current
 end
 
@@ -59,11 +77,36 @@ function state.switch(newstate, ...)
     return current
 end
 
+---Pushes a new state, keeping the old one in storage
+---@param newstate State
+---@param ... any
+---@return State
+function state.push(newstate, ...)
+    assert(newstate, "Called state.push with no state")
+    assert(type(newstate) == "table", "Called state.push with invalid state")
+    table.insert(state.__storage, current)
+    switch(newstate, ...)
+    return current
+end
+
+---Pops the current state, returns the new state
+---@return State
+function state.pop()
+    assert(#state.__storage > 0, "Called state.pop with no states in storage")
+    return pop(table.remove(state.__storage))
+end
+
+---Pops all states, returns the new state
+---@return State
+function state.popAll()
+    assert(#state.__storage > 0, "Called state.popAll with no states in storage")
+    return pop(table.remove(state.__storage, 1))
+end
+
 ---Returns the current state
 ---@return State
 function state.current() return current end
 
----@name state.last
 ---Returns the last state
 ---@return State
 function state.last() return last end
