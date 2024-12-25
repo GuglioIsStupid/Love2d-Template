@@ -1,6 +1,6 @@
 -- Short and sweet state library for LÖVE. States and substates supported! (Substate draws above the state)
 -- GuglioIsStupid - 2023
--- Version: 1.1.0
+-- Version: 1.1.1
 --[[
 
 The MIT License (MIT)
@@ -28,9 +28,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
 
 ---@alias State table
 ---@class state
-local state = {}
-state.__index = state
-state.__storage = {}
+local state = {} -- The state library
+state.__index = state -- Allows us to call state functions as if they were global
+state.__storage = {} -- Storage for previous states that were pushed
 
 ---@type any
 local current = nil -- Current state
@@ -113,12 +113,12 @@ function state.last() return last end
 
 ---Kills the current substate and calls current:substateReturn, returns nothing
 ---@param ... any
+---@return nil
 function state.killSubstate(...)
     if substate and substate.exit then substate:exit() end
     substate = nil
     state.inSubstate = false
     if current.substateReturn then current:substateReturn(...) end
-    return
 end 
 
 ---Returns the current substate
@@ -147,8 +147,19 @@ function state.substate(newstate, ...)
     return substate
 end
 
-local function new()
-    return setmetatable({}, {})
+---Creates a new state object (table)
+local function new(name)
+    local name = name or ("State." .. string.format("%x", math.random(0, 0xFFFFFFFF)))
+    return setmetatable({}, {
+        __index = state,
+        __tostring = function() 
+            return name
+        end,
+        __call = function(_, ...)
+            return state.switch(_, ...)
+        end,
+        __name = name
+    })
 end
 
 ---@diagnostic disable-next-line: deprecated
@@ -156,7 +167,7 @@ local unpack = table.unpack or unpack
 
 setmetatable(state, { -- Allows you to call state functions as if they were global
     __index = function(_, func)
-        --return function(...) return (current[func] or nop)(...) end
+        -- return function(...) return (current[func] or nop)(...) end
         -- call substate and current state (substate calls above current state)
         return function(...)
             local args = {...} -- Allows us to pass arguments to the function
@@ -169,7 +180,7 @@ setmetatable(state, { -- Allows you to call state functions as if they were glob
     end,
 
     -- when state is called as a function, return new, just makes the state definition look nicer
-    __call = function() return new() end
+    __call = function(name) return new(name) end
 })
 
 return state
